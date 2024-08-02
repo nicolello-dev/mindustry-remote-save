@@ -1,0 +1,10 @@
+{
+  "name": "mindustry-remote-save",
+  "displayName": "Mindustry Remote Save",
+  "author": "Nicola Migone",
+  "description": "Save your game remotely",
+  "version": "1.0",
+  "minGameVersion": 136,
+  "dependencies": [],
+  "hidden": true
+}
