@@ -70,7 +70,7 @@ function readSaveFiles() {
  * Uploads the files to S3 invoking a Lambda function.
  * @param {File[]} files - The files to upload.
  */
-async function uploadFilesToS3(files) {
+function uploadFilesToS3(files) {
   createAndSaveUserIdIfNotExists();
   /**
    * @type {Body}
@@ -79,7 +79,7 @@ async function uploadFilesToS3(files) {
     userid: getUserId(),
     files,
   };
-  const res = await fetch(
+  fetch(
     "https://rfgqiwd4bcgtpdljeqv2tqbsyi0zswra.lambda-url.eu-west-2.on.aws/",
     {
       method: "POST",
@@ -88,16 +88,26 @@ async function uploadFilesToS3(files) {
       },
       body: JSON.stringify(body),
     }
-  );
-  if (!res.ok) {
-    console.error("Failed to upload files to S3.");
-    console.error(await res.text());
-  } else {
-    console.log("Files uploaded to S3 correctly.");
-  }
+  )
+    .then((res) => {
+      if (!res.ok) {
+        console.error("Failed to upload files to S3.");
+        console.error(res.text());
+      } else {
+        console.log("Files uploaded to S3 correctly.");
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+    });
 }
 
 function main() {
+  try {
+    Vars.ui.hudfrag.showToast("Trying to save files to S3");
+  } catch (err) {
+    console.error(err);
+  }
   createAndSaveUserIdIfNotExists();
   uploadFilesToS3(readSaveFiles());
 }
