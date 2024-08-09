@@ -1,0 +1,23 @@
+#the mod name as displayed in-game
+displayName: "Remote saveFile"
+
+#the internal name of your mod
+name: "mindustry-remote-saveFile"
+
+#your name
+author: "Nicola Migone"
+
+#the fully qualified main class of the mod
+main: "dev.MindustryRemoteSave"
+
+#the mod description as seen in the mod dialog
+description: "A Mindustry mod to remotely saveFile your progress."
+
+#the mod version
+version: 0.1
+
+#the minimum game build required to run this mod
+minGameVersion: 145
+
+#this is a java mod
+java: true
