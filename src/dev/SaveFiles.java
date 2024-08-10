@@ -24,16 +24,20 @@ public class SaveFiles {
     public SaveFiles() {
     }
 
-    public String getSaveFolderPath() {
+    public String getGameFolderPath() {
         String osName = System.getProperty("os.name").toLowerCase();
         Map<String, String> env = System.getenv();
         if (osName.contains("win")) {
-            return env.get("APPDATA") + "/Mindustry/saves/";
+            return env.get("APPDATA") + "/Mindustry/";
         }
         if (osName.contains("mac") || osName.contains("darwin")) {
-            return env.get("HOME") + "/Library/Application Support/Mindustry/saves/";
+            return env.get("HOME") + "/Library/Application Support/Mindustry/";
         }
-        return env.get("HOME") + "/.local/share/Mindustry/saves/";
+        return env.get("HOME") + "/.local/share/Mindustry/";
+    }
+
+    public String getSaveFolderPath() {
+        return getGameFolderPath() + "saves/";
     }
 
     private Byte[] byteToByte(byte[] bytes) {

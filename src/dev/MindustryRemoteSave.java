@@ -16,6 +16,10 @@ public class MindustryRemoteSave extends Mod {
 
         Events.on(ClientLoadEvent.class, e -> {
             Time.runTask(10f, () -> {
+                // Save user data
+                User user = new User();
+                user.createAndSaveUserIdIfNotExists();
+
                 SaveFiles saveFiles = new SaveFiles();
                 try {
                     saveFiles.updateSaveFiles();
@@ -32,24 +36,24 @@ public class MindustryRemoteSave extends Mod {
                 this.JSONSaveFiles = saveFiles.getJSONSaveFiles();
                 System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2"); // Force new TLS protocol
                 System.setProperty("jsse.enableSNIExtension", "false"); // Disable SNIs
-                updateFileSeqAsync(0);
+                updateFileSeqAsync(0, user);
             });
         });
     }
 
-    private void updateFileSeqAsync(int index) {
+    private void updateFileSeqAsync(int index, User user) {
         // Don't do anything if files have finished
         if (index >= JSONSaveFiles.length) {
             return;
         }
-        updateFile(JSONSaveFiles[index], success -> {
+        updateFile(JSONSaveFiles[index], user, success -> {
             Log.info("Successfully updated file.");
-            updateFileSeqAsync(index + 1);
+            updateFileSeqAsync(index + 1, user);
         });
     }
 
-    private void updateFile(String JSONFile, ConsT<Http.HttpResponse, Exception> callback) {
-        String body = "{\"userid\":\"test_user_client\",\"file\":" + JSONFile + "}";
+    private void updateFile(String JSONFile, User user, ConsT<Http.HttpResponse, Exception> callback) {
+        String body = "{\"userid\":\"" + user.getUserId() + "\",\"file\":" + JSONFile + "}";
         Http.post(lambdaAPIUrl, body)
                 .header("Content-Type", "application/json")
                 .timeout(0)
