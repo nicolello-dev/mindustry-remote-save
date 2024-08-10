@@ -1,6 +1,3 @@
-// COPY OF THE CODE IN THE LAMBDA FUNCTION
-// You're not supposed to run this yourself
-
 import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 
 async function putObjectToS3(bucket, key, data) {
@@ -47,7 +44,7 @@ export async function handler(event, context) {
             body: "Missing userId or file!"
         }
     }
-    await putObjectToS3(bucket, `saves/${userid}/${file.name}`, file.content);
+    await putObjectToS3(bucket, `saves/${userid}/${file.path}`, file.content);
     console.log("Everything went smoothly!");
     return {
         statusCode: 200,
