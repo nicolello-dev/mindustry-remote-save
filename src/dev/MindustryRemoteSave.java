@@ -1,12 +1,15 @@
 package dev;
 
 import arc.*;
+import arc.func.ConsT;
 import arc.util.*;
 import mindustry.game.EventType.*;
 import mindustry.mod.*;
 import mindustry.ui.dialogs.*;
 
 public class MindustryRemoteSave extends Mod {
+    String lambdaAPIUrl = "https://f0zfn12gx6.execute-api.eu-west-2.amazonaws.com/prod";
+    String[] JSONSaveFiles;
 
     public MindustryRemoteSave() {
         Log.info("Loaded constructor.");
@@ -30,31 +33,43 @@ public class MindustryRemoteSave extends Mod {
                     Log.info("Successfully read all save files.");
                 } catch (ArcRuntimeException err) {
                     Log.err("An error occurred while reading save files.");
-                    Log.err(err);
+                    Log.err(err.toString());
                     showBasicDialog("Something went wrong reading save files. Please try again or report it on github.");
                     return;
+                } catch (Exception err) {
+                    Log.err("An unknown error occurred while reading save files.");
+                    Log.err(err.toString());
                 }
 
-                String files = saveFiles.getJSONSaveFiles();
-                String lambdaAPIUrl = "https://rfgqiwd4bcgtpdljeqv2tqbsyi0zswra.lambda-url.eu-west-2.on.aws/";
-                try {
-                    Http.HttpRequest req = Http.post(lambdaAPIUrl, "{\"userid\":\"test_user\",files:" + files + "}");
-                    req.timeout = 10000; // 10s
-                    req.error(err -> {
-                        Log.err("An error occurred while reading save files.");
-                        Log.err(err);
-                        throw new RuntimeException("An error occurred while POSTing request to API");
-                    });
-                    req.submit(r -> Log.info("Successfully got result: " + r.getResultAsString()));
-                    Log.info("Successfully saved all data.");
-                    // showBasicDialog("Saved all data.");
-                } catch (Exception err) {
-                    Log.err("An error occurred with the API request. Review any settings and proxies and retry.");
-                    Log.err(err);
-                    // showBasicDialog("Couldn't reach the server, please try again");
-                }
+                this.JSONSaveFiles = saveFiles.getJSONSaveFiles();
+                System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2"); // Force new TLS protocol
+                System.setProperty("jsse.enableSNIExtension", "false"); // Disable SNIs
+                updateFileSeqAsync(0);
             });
         });
+    }
+
+    private void updateFileSeqAsync(int index) {
+        // Don't do anything if files have finished
+        if (index >= JSONSaveFiles.length) {
+            return;
+        }
+        updateFile(JSONSaveFiles[index], success -> {
+            Log.info("Successfully updated file.");
+            updateFileSeqAsync(index + 1);
+        });
+    }
+
+    private void updateFile(String JSONFile, ConsT<Http.HttpResponse, Exception> callback) {
+        String body = "{\"userid\":\"test_user_client\",\"file\":" + JSONFile + "}";
+        Http.post(lambdaAPIUrl, body)
+                .header("Content-Type", "application/json")
+                .timeout(0)
+                .error(err -> {
+                    Log.info("Error in request with body: " + body);
+                    Log.err(err.toString());
+                })
+                .submit(callback);
     }
 
     private void showBasicDialog(String text) {

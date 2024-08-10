@@ -3,6 +3,7 @@ package dev;
 import arc.files.Fi;
 import arc.struct.Seq;
 import arc.util.ArcRuntimeException;
+import arc.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,9 +49,10 @@ public class SaveFiles {
         String saveFolderPath = getSaveFolderPath();
         Fi saveFolder = new Fi(saveFolderPath);
         Seq<Fi> saveFilesAsFi = saveFolder.findAll();
-        List<SaveFile> saveFiles = new ArrayList<SaveFile>();
+        List<SaveFile> saveFiles = new ArrayList<>();
         // For each save file, create the corresponding `SaveFile` object and add it to the array
-        for(Fi saveFile : saveFilesAsFi) {
+        for (Fi saveFile : saveFilesAsFi) {
+            Log.info("Reading file: " + saveFile.name());
             SaveFile sf = new SaveFile();
             sf.setFileName(saveFile.name());
             // To get the file's relative path, get the parent's absolute path and then take it off the child's.
@@ -64,16 +66,10 @@ public class SaveFiles {
         setSaveFiles(saveFiles);
     }
 
-    public String getJSONSaveFiles() {
-        if(saveFiles == null || saveFiles.isEmpty()) {
+    public String[] getJSONSaveFiles() {
+        if (saveFiles == null || saveFiles.isEmpty()) {
             throw new RuntimeException("saveFiles is null or empty");
         }
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        for(SaveFile sf : saveFiles) {
-            sb.append(sf.toJSON());
-        }
-        sb.append("]");
-        return sb.toString();
+        return saveFiles.stream().map(SaveFile::toJSON).toArray(String[]::new);
     }
 }
