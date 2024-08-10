@@ -14,19 +14,8 @@ public class MindustryRemoteSave extends Mod {
     public MindustryRemoteSave() {
         Log.info("Loaded constructor.");
 
-        //listen for game load event
         Events.on(ClientLoadEvent.class, e -> {
-            //show dialog upon startup
             Time.runTask(10f, () -> {
-                BaseDialog dialog = new BaseDialog("frog");
-                dialog.cont.add("behold").row();
-                //mod sprites are prefixed with the mod name (this mod is called 'dev-java-mod' in its config)
-                dialog.cont.image(Core.atlas.find("mindustry-remote-saveFile-frog")).pad(20f).row();
-                dialog.cont.button("I see", dialog::hide).size(100f, 50f);
-                dialog.show();
-
-                // END INITIAL MOD
-
                 SaveFiles saveFiles = new SaveFiles();
                 try {
                     saveFiles.updateSaveFiles();
@@ -34,7 +23,6 @@ public class MindustryRemoteSave extends Mod {
                 } catch (ArcRuntimeException err) {
                     Log.err("An error occurred while reading save files.");
                     Log.err(err.toString());
-                    showBasicDialog("Something went wrong reading save files. Please try again or report it on github.");
                     return;
                 } catch (Exception err) {
                     Log.err("An unknown error occurred while reading save files.");
@@ -70,18 +58,6 @@ public class MindustryRemoteSave extends Mod {
                     Log.err(err.toString());
                 })
                 .submit(callback);
-    }
-
-    private void showBasicDialog(String text) {
-        BaseDialog dialog = new BaseDialog("Remote save");
-        dialog.cont.add(text).row();
-        dialog.cont.button("Ok", dialog::hide).size(100f, 50f);
-        dialog.show();
-    }
-
-    @Override
-    public void loadContent() {
-        Log.info("Loading some dev content.");
     }
 
 }
