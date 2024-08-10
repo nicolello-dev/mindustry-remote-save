@@ -50,6 +50,7 @@ public class SaveFiles {
 
     public void updateSaveFiles() throws ArcRuntimeException {
 
+        String gameFolderPath = getGameFolderPath();
         String saveFolderPath = getSaveFolderPath();
         Fi saveFolder = new Fi(saveFolderPath);
         Seq<Fi> saveFilesAsFi = saveFolder.findAll();
@@ -59,9 +60,9 @@ public class SaveFiles {
             Log.info("Reading file: " + saveFile.name());
             SaveFile sf = new SaveFile();
             sf.setFileName(saveFile.name());
-            // To get the file's relative path, get the parent's absolute path and then take it off the child's.
-            int saveFolderPathLength = saveFolder.absolutePath().length();
-            String saveFileRelativePath = saveFile.absolutePath().substring(saveFolderPathLength);
+            // To get the file's relative path, remove the game folder's absolute path from the file's absolute path.
+            int gameFolderPathLength = gameFolderPath.length();
+            String saveFileRelativePath = saveFile.absolutePath().substring(gameFolderPathLength);
             sf.setRelativeFilePath(saveFileRelativePath);
             sf.setSaveFileContents(byteToByte(saveFile.readBytes()));
 

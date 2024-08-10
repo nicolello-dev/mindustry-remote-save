@@ -47,7 +47,7 @@ public class MindustryRemoteSave extends Mod {
             return;
         }
         updateFile(JSONSaveFiles[index], user, success -> {
-            Log.info("Successfully updated file.");
+            Log.info("Successfully uploaded file");
             updateFileSeqAsync(index + 1, user);
         });
     }

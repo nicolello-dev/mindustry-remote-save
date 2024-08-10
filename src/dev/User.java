@@ -47,14 +47,17 @@ public class User {
     public String getUserId() {
         // If userId has already been set, return that
         if (userId != null) {
+            Log.info("User id has already been set, returning that");
             return userId;
         }
         // Otherwise, read the user id file and return that
         String userIdFromFile = readUserIdFromFile();
         if (userIdFromFile != null) {
+            Log.info("User id had been created, returning the file's contents");
             return userIdFromFile;
         }
         // In case that hasn't been set, then create a new one
+        Log.info("Creating new user id");
         return createUserId();
     }
 
