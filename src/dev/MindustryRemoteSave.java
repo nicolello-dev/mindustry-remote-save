@@ -1,6 +1,7 @@
 package dev;
 
 import arc.*;
+import arc.func.Cons;
 import arc.func.ConsT;
 import arc.util.*;
 import mindustry.game.EventType.*;
@@ -37,6 +38,8 @@ public class MindustryRemoteSave extends Mod {
                 System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2"); // Force new TLS protocol
                 System.setProperty("jsse.enableSNIExtension", "false"); // Disable SNIs
                 updateFileSeqAsync(0, user);
+
+                setInterval(() -> updateFileSeqAsync(0, user), 30);
             });
         });
     }
@@ -44,7 +47,11 @@ public class MindustryRemoteSave extends Mod {
     private void updateFileSeqAsync(int index, User user) {
         // Don't do anything if files have finished
         if (index >= JSONSaveFiles.length) {
+            Log.info("Finished uploading files");
             return;
+        }
+        if (index == 0) {
+            Log.info("Starting to upload files");
         }
         updateFile(JSONSaveFiles[index], user, success -> {
             Log.info("Successfully uploaded file");
@@ -62,6 +69,10 @@ public class MindustryRemoteSave extends Mod {
                     Log.err(err.toString());
                 })
                 .submit(callback);
+    }
+
+    private void setInterval(Runnable callback, float delaySeconds) {
+        Timer.schedule(callback, 0, delaySeconds);
     }
 
 }
