@@ -1,12 +1,10 @@
 package dev;
 
 import arc.*;
-import arc.func.Cons;
 import arc.func.ConsT;
 import arc.util.*;
 import mindustry.game.EventType.*;
 import mindustry.mod.*;
-import mindustry.ui.dialogs.*;
 
 public class MindustryRemoteSave extends Mod {
     String lambdaAPIUrl = "https://f0zfn12gx6.execute-api.eu-west-2.amazonaws.com/prod";
@@ -35,8 +33,6 @@ public class MindustryRemoteSave extends Mod {
                 }
 
                 this.JSONSaveFiles = saveFiles.getJSONSaveFiles();
-                System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2"); // Force new TLS protocol
-                System.setProperty("jsse.enableSNIExtension", "false"); // Disable SNIs
                 updateFileSeqAsync(0, user);
 
                 setInterval(() -> updateFileSeqAsync(0, user), 30);
@@ -54,7 +50,6 @@ public class MindustryRemoteSave extends Mod {
             Log.info("Starting to upload files");
         }
         updateFile(JSONSaveFiles[index], user, success -> {
-            Log.info("Successfully uploaded file");
             updateFileSeqAsync(index + 1, user);
         });
     }
