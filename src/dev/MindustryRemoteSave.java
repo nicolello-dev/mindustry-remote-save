@@ -35,7 +35,7 @@ public class MindustryRemoteSave extends Mod {
                 this.JSONSaveFiles = saveFiles.getJSONSaveFiles();
                 updateFileSeqAsync(0, user);
 
-                setInterval(() -> updateFileSeqAsync(0, user), 30);
+                setInterval(() -> updateFileSeqAsync(0, user), 600);
             });
         });
     }
